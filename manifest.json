@@ -1,0 +1,18 @@
+{
+    "manifest_version": 3,
+    "name": "Page Clipper",
+    "version": "1.0",
+    "description": "Select and save important text from any page",
+    "permissions": ["storage", "activeTab"],
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"],
+        "css": ["styles.css"]
+      }
+    ],
+    "action": {
+      "default_popup": "popup.html",
+      "default_title": "View Saved Highlights"
+    }
+  }
