@@ -1,0 +1,42 @@
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "sendToBale") {
+    chrome.storage.sync.get(["baleToken", "baleChatId"], (data) => {
+      if (!data.baleToken || !data.baleChatId) {
+        sendResponse({ success: false, error: "Missing configuration" });
+        return;
+      }
+
+      const apiUrl = `https://tapi.bale.ai/bot${data.baleToken}/sendMessage`;
+
+      fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: data.baleChatId,
+          text: request.message,
+          parse_mode: "Markdown"
+        })
+      })
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.ok) {
+          chrome.storage.local.set({
+            lastSent: {
+              text: request.text,
+              date: new Date().toLocaleString()
+            }
+          });
+          sendResponse({ success: true });
+        } else {
+          sendResponse({ success: false, error: "Bale API error" });
+        }
+      })
+      .catch((err) => {
+        console.error("Bale API error:", err);
+        sendResponse({ success: false, error: err.message });
+      });
+
+      return true; // Keep channel open for async response
+    });
+  }
+});

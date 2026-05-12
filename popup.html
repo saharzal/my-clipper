@@ -1,60 +1,184 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <style>
-      body {
-        width: 320px;
-        font-family: sans-serif;
-        padding: 12px;
-      }
-      h2 {
-        font-size: 15px;
-        margin-bottom: 10px;
-      }
-      .item {
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 8px;
-      }
-      .item p {
-        margin: 0 0 4px;
-        font-size: 13px;
-      }
-      .item small {
-        color: #6b7280;
-        font-size: 11px;
-      }
-      .item a {
-        font-size: 11px;
-        color: #4f46e5;
-        text-decoration: none;
-      }
-      .delete {
-        float: right;
-        cursor: pointer;
-        color: #ef4444;
-        font-size: 12px;
-      }
-      #empty {
-        color: #9ca3af;
-        font-size: 13px;
-      }
-      #clear-all {
-        margin-top: 8px;
-        font-size: 12px;
-        color: #ef4444;
-        cursor: pointer;
-        background: none;
-        border: none;
-      }
-    </style>
-  </head>
-  <body>
-    <h2>📌 Saved Highlights</h2>
-    <div id="list"></div>
-    <button id="clear-all">Clear all</button>
-    <script src="popup.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      width: 340px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f9fafb;
+    }
+    .header {
+      background: #4f46e5;
+      color: white;
+      padding: 16px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e7eb;
+      background: white;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6b7280;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: #4f46e5;
+      border-bottom-color: #4f46e5;
+    }
+    .tab-content {
+      display: none;
+      padding: 16px;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      color: #1e40af;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 4px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: monospace;
+    }
+    input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+    }
+    button {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #4338ca;
+    }
+    button:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+    }
+    #status {
+      font-size: 12px;
+      padding: 8px;
+      border-radius: 4px;
+      text-align: center;
+      margin-top: 8px;
+      display: none;
+    }
+    #status.success {
+      background: #d1fae5;
+      color: #065f46;
+      display: block;
+    }
+    #status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      display: block;
+    }
+    .highlight-item {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .highlight-text {
+      color: #1f2937;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    .highlight-meta {
+      color: #9ca3af;
+      font-size: 11px;
+    }
+    .help-text {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+    #empty {
+      color: #9ca3af;
+      font-size: 12px;
+      text-align: center;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">🎯 Send to Bale</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="send">Send</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+  </div>
+
+  <div id="send" class="tab-content active">
+    <div class="info-box">
+      Select any text on a webpage to send it to your Bale chat!
+    </div>
+    <div id="last-sent"></div>
+  </div>
+
+  <div id="settings" class="tab-content">
+    <div class="form-group">
+      <label for="token">Bot API Token</label>
+      <input type="password" id="token" placeholder="Paste your bot token">
+      <p class="help-text">Get from @BotFather on Bale</p>
+    </div>
+    <div class="form-group">
+      <label for="chatId">Chat ID / User ID</label>
+      <input type="text" id="chatId" placeholder="Your user ID">
+      <p class="help-text">Your numeric Bale user or chat ID</p>
+    </div>
+    <button id="save-settings">Save Settings</button>
+    <div id="status"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
 </html>

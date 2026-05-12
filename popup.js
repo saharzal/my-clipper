@@ -1,36 +1,57 @@
-chrome.storage.local.get({ highlights: [] }, (data) => {
-    const list = document.getElementById("list");
-    const highlights = data.highlights.reverse(); // newest first
-  
-    if (highlights.length === 0) {
-      list.innerHTML = '<p id="empty">No highlights yet. Select text on any page!</p>';
-      return;
-    }
-  
-    highlights.forEach((h, i) => {
-      const div = document.createElement("div");
-      div.className = "item";
-      div.innerHTML = `
-        <span class="delete" data-index="${i}">✕</span>
-        <p>"${h.text}"</p>
-        <small>${h.date}</small><br>
-        <a href="${h.url}" target="_blank">${h.title || h.url}</a>
-      `;
-      list.appendChild(div);
-    });
-  
-    // Delete individual highlight
-    document.querySelectorAll(".delete").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const index = highlights.length - 1 - parseInt(e.target.dataset.index);
-        chrome.storage.local.get({ highlights: [] }, (data) => {
-          data.highlights.splice(index, 1);
-          chrome.storage.local.set({ highlights: data.highlights }, () => location.reload());
-        });
-      });
-    });
+// Tab switching
+document.querySelectorAll(".tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach((c) => c.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
   });
-  
-  document.getElementById("clear-all").addEventListener("click", () => {
-    chrome.storage.local.set({ highlights: [] }, () => location.reload());
+});
+
+// Load and display settings
+chrome.storage.sync.get(["baleToken", "baleChatId"], (data) => {
+  if (data.baleToken) {
+    document.getElementById("token").value = data.baleToken;
+  }
+  if (data.baleChatId) {
+    document.getElementById("chatId").value = data.baleChatId;
+  }
+});
+
+// Save settings
+document.getElementById("save-settings").addEventListener("click", () => {
+  const token = document.getElementById("token").value.trim();
+  const chatId = document.getElementById("chatId").value.trim();
+  const status = document.getElementById("status");
+
+  if (!token || !chatId) {
+    status.textContent = "⚠️ Please fill in all fields";
+    status.className = "error";
+    return;
+  }
+
+  chrome.storage.sync.set({ baleToken: token, baleChatId: chatId }, () => {
+    status.textContent = "✅ Settings saved";
+    status.className = "success";
+    setTimeout(() => {
+      status.className = "";
+    }, 2000);
   });
+});
+
+// Show last sent item
+chrome.storage.local.get(["lastSent"], (data) => {
+  const container = document.getElementById("last-sent");
+  if (data.lastSent) {
+    const item = data.lastSent;
+    container.innerHTML = `
+      <div class="highlight-item">
+        <div class="highlight-text">✅ Last sent:</div>
+        <div style="color: #374151; font-size: 12px; margin: 4px 0;">"${item.text.substring(0, 100)}${item.text.length > 100 ? '...' : ''}"</div>
+        <div class="highlight-meta">${item.date}</div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = '<p id="empty">Highlight text on any page and click "Send" to share it to Bale!</p>';
+  }
+});

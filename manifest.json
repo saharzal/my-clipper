@@ -1,9 +1,13 @@
 {
     "manifest_version": 3,
-    "name": "Page Clipper",
+    "name": "Send to Bale",
     "version": "1.0",
-    "description": "Select and save important text from any page",
-    "permissions": ["storage", "activeTab"],
+    "description": "Send highlighted text and URLs to Bale Messenger",
+    "permissions": ["storage", "activeTab", "scripting"],
+    "host_permissions": ["https://tapi.bale.ai/*"],
+    "background": {
+      "service_worker": "background.js"
+    },
     "content_scripts": [
       {
         "matches": ["<all_urls>"],
@@ -13,6 +17,7 @@
     ],
     "action": {
       "default_popup": "popup.html",
-      "default_title": "View Saved Highlights"
-    }
+      "default_title": "Send to Bale"
+    },
+    "options_page": "options.html"
   }
