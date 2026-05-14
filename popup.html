@@ -101,20 +101,20 @@
       background: #d1d5db;
       cursor: not-allowed;
     }
-    #status {
+    [id$="-status"] {
       font-size: 12px;
       padding: 8px;
       border-radius: 4px;
       text-align: center;
-      margin-top: 8px;
+      margin-top: 6px;
       display: none;
     }
-    #status.success {
+    [id$="-status"].success {
       background: #d1fae5;
       color: #065f46;
       display: block;
     }
-    #status.error {
+    [id$="-status"].error {
       background: #fee2e2;
       color: #991b1b;
       display: block;
@@ -169,14 +169,16 @@
       <label for="token">Bot API Token</label>
       <input type="password" id="token" placeholder="Paste your bot token">
       <p class="help-text">Get from @BotFather on Bale</p>
+      <button id="save-token">Save Token</button>
+      <div id="token-status"></div>
     </div>
     <div class="form-group">
       <label for="chatId">Chat ID / User ID</label>
       <input type="text" id="chatId" placeholder="Your user ID">
       <p class="help-text">Your numeric Bale user or chat ID</p>
+      <button id="save-chatid">Save Chat ID</button>
+      <div id="chatid-status"></div>
     </div>
-    <button id="save-settings">Save Settings</button>
-    <div id="status"></div>
   </div>
 
   <script src="popup.js"></script>

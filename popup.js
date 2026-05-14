@@ -18,20 +18,39 @@ chrome.storage.sync.get(["baleToken", "baleChatId"], (data) => {
   }
 });
 
-// Save settings
-document.getElementById("save-settings").addEventListener("click", () => {
+// Save token
+document.getElementById("save-token").addEventListener("click", () => {
   const token = document.getElementById("token").value.trim();
-  const chatId = document.getElementById("chatId").value.trim();
-  const status = document.getElementById("status");
+  const status = document.getElementById("token-status");
 
-  if (!token || !chatId) {
-    status.textContent = "⚠️ Please fill in all fields";
+  if (!token) {
+    status.textContent = "⚠️ Please enter a token";
     status.className = "error";
     return;
   }
 
-  chrome.storage.sync.set({ baleToken: token, baleChatId: chatId }, () => {
-    status.textContent = "✅ Settings saved";
+  chrome.storage.sync.set({ baleToken: token }, () => {
+    status.textContent = "✅ Token saved";
+    status.className = "success";
+    setTimeout(() => {
+      status.className = "";
+    }, 2000);
+  });
+});
+
+// Save chat ID
+document.getElementById("save-chatid").addEventListener("click", () => {
+  const chatId = document.getElementById("chatId").value.trim();
+  const status = document.getElementById("chatid-status");
+
+  if (!chatId) {
+    status.textContent = "⚠️ Please enter a chat ID";
+    status.className = "error";
+    return;
+  }
+
+  chrome.storage.sync.set({ baleChatId: chatId }, () => {
+    status.textContent = "✅ Chat ID saved";
     status.className = "success";
     setTimeout(() => {
       status.className = "";
