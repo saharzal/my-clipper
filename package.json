@@ -1,0 +1,13 @@
+{
+  "name": "send-to-bale",
+  "version": "1.0.0",
+  "description": "Send highlighted text and URLs to Bale Messenger",
+  "scripts": {
+    "build": "tsc && cp popup.html options.html styles.css manifest.json bale_note_saver_logo.png dist/",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.277",
+    "typescript": "^5.5.4"
+  }
+}
