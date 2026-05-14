@@ -17,7 +17,17 @@
     ],
     "action": {
       "default_popup": "popup.html",
-      "default_title": "Send to Bale"
+      "default_title": "Send to Bale",
+      "default_icons": {
+        "16": "bale_note_saver_logo.png",
+        "48": "bale_note_saver_logo.png",
+        "128": "bale_note_saver_logo.png"
+      }
+    },
+    "icons": {
+      "16": "bale_note_saver_logo.png",
+      "48": "bale_note_saver_logo.png",
+      "128": "bale_note_saver_logo.png"
     },
     "options_page": "options.html"
   }
