@@ -16,6 +16,21 @@ chrome.storage.sync.get(["baleToken", "baleChatId"], (data) => {
   if (data.baleChatId) {
     document.getElementById("chatId").value = data.baleChatId;
   }
+
+  // Check if both token and chatId are set and show/hide warning
+  const hasToken = !!data.baleToken;
+  const hasChatId = !!data.baleChatId;
+
+  const infoBox = document.getElementById("info-box");
+  const warningBox = document.getElementById("warning-box");
+
+  if (hasToken && hasChatId) {
+    infoBox.classList.remove("hide");
+    warningBox.classList.remove("show");
+  } else {
+    infoBox.classList.add("hide");
+    warningBox.classList.add("show");
+  }
 });
 
 // Save token

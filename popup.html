@@ -59,6 +59,23 @@
       margin-bottom: 12px;
       line-height: 1.4;
     }
+    .warning-box {
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      color: #92400e;
+      margin-bottom: 12px;
+      line-height: 1.4;
+      display: none;
+    }
+    .warning-box.show {
+      display: block;
+    }
+    .info-box.hide {
+      display: none;
+    }
     .form-group {
       margin-bottom: 14px;
     }
@@ -158,8 +175,11 @@
   </div>
 
   <div id="send" class="tab-content active">
-    <div class="info-box">
+    <div class="info-box" id="info-box">
       Select any text on a webpage to send it to your Bale chat!
+    </div>
+    <div class="warning-box" id="warning-box">
+      ⚠️ Please set your Bot API Token and Chat ID in the Settings tab to start sending messages!
     </div>
     <div id="last-sent"></div>
   </div>
