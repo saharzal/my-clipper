@@ -3,7 +3,7 @@
     "name": "Send to Bale",
     "version": "1.0",
     "description": "Send highlighted text and URLs to Bale Messenger",
-    "permissions": ["storage", "activeTab", "scripting"],
+    "permissions": ["storage", "activeTab", "scripting", "contextMenus"],
     "host_permissions": ["https://tapi.bale.ai/*"],
     "background": {
       "service_worker": "background.js"

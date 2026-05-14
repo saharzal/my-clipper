@@ -1,76 +1,11 @@
 let tooltipState = { selectedText: "", range: null };
 
-document.addEventListener("mouseup", () => {
-  const selectedText = window.getSelection().toString().trim();
-  if (!selectedText) {
-    console.log("No text selected");
-    return;
+chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
+  if (request.action === "sendToBale") {
+    sendToBale(request.message);
+    sendResponse({ success: true });
   }
-  console.log("✓ Text selected:", selectedText.substring(0, 50));
-  removeTooltip();
-
-  const range = window.getSelection().getRangeAt(0);
-  const rect = range.getBoundingClientRect();
-
-  // Create button element
-  const button = document.createElement("button");
-  button.id = "hl-tooltip";
-  button.innerHTML = "📤 Send to Bale";
-  button.type = "button";
-
-  // Store tooltip state globally
-  tooltipState = { selectedText, range };
-  console.log("✓ Tooltip state stored");
-
-  button.style.top = `${rect.top - 40}px`;
-  button.style.left = `${rect.left}px`;
-
-  document.body.appendChild(button);
-  console.log("✓ Button element added to DOM");
-
-  // Direct inline click handler
-  button.onclick = (e) => {
-    console.log("🎯 BUTTON CLICKED!");
-    e.preventDefault();
-    e.stopPropagation();
-    console.log("✓ Calling sendToBale...");
-    sendToBale(tooltipState.selectedText);
-    highlightSelection(tooltipState.range);
-    removeTooltip();
-  };
-
-  console.log("✓ Click handler attached");
 });
-
-// Global click handler as fallback
-document.addEventListener("click", (e) => {
-  if (e.target.id === "hl-tooltip") {
-    console.log("🎯 GLOBAL CLICK DETECTED ON TOOLTIP");
-    e.preventDefault();
-    e.stopPropagation();
-    sendToBale(tooltipState.selectedText);
-    highlightSelection(tooltipState.range);
-    removeTooltip();
-  }
-}, true);
-
-// Remove tooltip when clicking elsewhere
-document.addEventListener("mousedown", (e) => {
-  if (e.target.id !== "hl-tooltip") {
-    removeTooltip();
-  }
-}, true);
-
-function removeTooltip() {
-  const existing = document.getElementById("hl-tooltip");
-  if (existing) existing.remove();
-}
-
-function highlightSelection(range) {
-  const mark = document.createElement("mark");
-  mark.className = "hl-highlight";
-  range.surroundContents(mark);
-}
 
 function sendToBale(text) {
   const url = window.location.href;
@@ -81,18 +16,8 @@ function sendToBale(text) {
     message += `\n\n_${url}_`;
   }
 
-  console.log("Sending message to background script...");
-  chrome.runtime.sendMessage(
-    { action: "sendToBale", message, text },
-    (response) => {
-      console.log("Background response:", response);
-      if (response.success) {
-        showNotification("✅ Sent to Bale!");
-      } else {
-        showNotification(`❌ ${response.error || "Failed to send"}`);
-      }
-    }
-  );
+  // console.log("Sending message to background script...");
+  chrome.runtime.sendMessage({ action: "sendToBale", message, text });
 }
 
 function showNotification(message) {

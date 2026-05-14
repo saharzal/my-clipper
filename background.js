@@ -1,3 +1,31 @@
+chrome.contextMenus.create({
+  id: "send-to-bale",
+  title: "Send to Bale",
+  contexts: ["page", "selection", "link"],
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  let message = "";
+
+  if (info.menuItemId === "send-to-bale") {
+    if (info.selectionText) {
+      message = info.selectionText;
+    } else if (info.linkUrl) {
+      message = info.linkUrl;
+    } else if (info.srcUrl) {
+      message = info.srcUrl;
+    } else {
+      message = tab.url;
+    }
+
+    chrome.tabs.sendMessage(tab.id, {
+      action: "sendToBale",
+      message: message,
+      text: message
+    });
+  }
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "sendToBale") {
     chrome.storage.sync.get(["baleToken", "baleChatId"], (data) => {
